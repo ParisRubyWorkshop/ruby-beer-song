@@ -10,16 +10,8 @@ end
 class BeerSong
 
   def verse(line_number)
-    one_word        = line_number == 1 ? "it" : "one"
-    first_word      = "bottle".pluralize(line_number)
-    second_sentence = "Take #{one_word} down and pass it around, #{"bottle".pluralize(line_number - 1)} of beer on the wall.\n"
-    if line_number == 0
-      first_word = first_word.capitalize
-      second_sentence = "Go to the store and buy some more, 99 bottles of beer on the wall.\n"
-    end
-
-    "#{first_word} of beer on the wall, #{"bottle".pluralize(line_number)} of beer.\n" \
-    "#{second_sentence}"
+    current_verse = Verse.new(line_number)
+    current_verse.first_sentence << current_verse.second_sentence
   end
 
   def verses(a, b)

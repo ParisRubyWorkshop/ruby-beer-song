@@ -3,6 +3,7 @@ gem 'minitest', '>= 5.0.0'
 require 'minitest/autorun'
 require_relative 'beer_song'
 require_relative 'book_keeping'
+require_relative 'verse'
 
 # rubocop:disable Metrics/LineLength
 class BeerSongTest < Minitest::Test
