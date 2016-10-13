@@ -11,59 +11,71 @@ class BeerSong
   end
 
   def verse(number)
-    verse = Verse.new(number)
+    verse = Verse.bottle(number)
     LINES.map { |line| line % verse }.map(&:capitalize).join
   end
 
   private
 
   LINES = [
-    "%{bottle} of beer on the wall, %{bottle} of beer.\n".freeze,
-    "%{action}, %{bottle_left} of beer on the wall.\n".freeze,
+    "%{count} of beer on the wall, %{count} of beer.\n".freeze,
+    "%{action}, %{count_left} of beer on the wall.\n".freeze,
   ].freeze
 
 end
 
-Verse = Struct.new(:number) do
+module Verse
+  def self.bottle(number)
+    case number
+    when 0 then Bottle0
+    when 1 then Bottle1
+    else        Bottle
+    end.new(number)
+  end
+end
+
+Bottle = Struct.new(:number) do
   def to_hash
-    @hash ||=
-      case number
-      when 0 then defaults.merge(bottle_0)
-      when 1 then defaults.merge(bottle_1)
-      when 2 then defaults.merge(bottle_2)
-      else defaults
-      end
+    @_to_hash ||= {count: count, count_left: count_left, action: action}
   end
 
-  private
-
-  def defaults
-    {
-      bottle: "#{number} bottles",
-      bottle_left: "#{number - 1} bottles",
-      action: "Take one down and pass it around",
-    }
+  def count
+    "#{number} bottles"
   end
 
-  def bottle_0
-    {
-      bottle: "no more bottles",
-      bottle_left: "99 bottles",
-      action: "Go to the store and buy some more",
-    }
+  def count_left
+    next_bottle.count
   end
 
-  def bottle_1
-    {
-      bottle: "1 bottle",
-      bottle_left: "no more bottles",
-      action: "Take it down and pass it around",
-    }
+  def action
+    "Take one down and pass it around"
   end
 
-  def bottle_2
-    {
-      bottle_left: "1 bottle",
-    }
+  def next_bottle
+    Verse.bottle(number - 1)
+  end
+end
+
+class Bottle0 < Bottle
+  def count
+    "no more bottles"
+  end
+
+  def action
+    "Go to the store and buy some more"
+  end
+
+  def next_bottle
+    Verse.bottle(99)
+  end
+end
+
+class Bottle1 < Bottle
+  def count
+    "1 bottle"
+  end
+
+  def action
+    "Take it down and pass it around"
   end
 end
